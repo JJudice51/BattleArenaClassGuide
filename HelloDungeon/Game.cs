@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using System.Xml;
+using System.Xml.Schema;
 
 namespace HelloDungeon
 {
@@ -209,9 +213,18 @@ namespace HelloDungeon
             }
         }
 
-        //setting up an array just cause its the alphabet
+        //setting up an array just cause, its the alphabet. arrays reserve memory. brackets pretty much mean array at this point.
+        //you have to set up an array just like this. the variabletype [] changes it from just a variable to an array. next part is the
+        //... name of the array. after the = new 'variabletype' the number of slots reserved will be in the [1] or brackets.
+        // after that in the curly braces {} you put the info that goes inside the slots. slots always start at 0 then to whatever number
+        //... of slots you need to reserve.
+        //the info in each slot of an array is called an ELEMENT. to change an element in an array 'letters[0] = b;'. so in the brackets
+        //... after the name of the array is the slot you want to access = new element data;
+        //new means its making room for the data that needs to be stored
+        //arrays don't just store info. it stores a place or specific address in memory. like how ref works for individual variables.
         char[] letters = new char[26] {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' };
-        
+
+       
         
         //Start is where we put all logic that needs to be initialized when the game as been called to begin/run.
         void Start()
@@ -359,7 +372,42 @@ namespace HelloDungeon
         
         
         public void Run()
-        {
+        {   
+            //more notes on Arrays at line 212
+            //function below allows you to change info in array slots.
+            int[] grades = new int[5] {23,43,56,7,10};
+          
+            void SetArrayValue(int[] arr, int index, int value)
+            {
+                arr[index] = value;
+            }
+
+            //for loop to print all values inside an array.
+            // initializer; condition; expression.
+            for (int i = 0; i < grades.Length; i++)
+            {
+                //grades at the index of variable i from the for loop.
+                Console.WriteLine(grades[i]);
+            }
+            return;
+
+
+            ///LODIS INsTRUCTION: create a function that takes in an integer array.
+            ///the function should print out the sum of all of the values in the array.
+            ///ex: Input: int[] numbers = new int [3] {1,2,3};
+            ///ex: Output: 6
+
+            //my attempt at the thing Lodis wants from us...
+            //trying to figure out how to make a variable/function that = the sum of all integers in an array
+            void Total(int[] prompt)
+            { 
+            
+                int numbos
+            for (int i = 0; i < prompt.Length; i++)
+            {
+                Console.WriteLine(i +prompt[i]);
+            }
+
             Start();
             //Start - called before the 1st loop
             // is mainly used to initialize variables at the beginning of the game.
