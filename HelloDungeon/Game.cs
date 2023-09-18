@@ -12,32 +12,26 @@ using System.Xml.Schema;
 
 namespace HelloDungeon
 {
+    struct Weapon
+    {
+        public string WeaponName;
+        public float WeaponDamage;
+        public float WeaponDefense;
+        public float WeaponDurability;
+        public bool IsBroken;
+    }
     //Lodis instruction: wants to make battle arena type game. turn based fightingish game
     class Game
     {
         //struct = making your own variable type and storing a bunch of data, pretty much whatever variables and values you want it to.
         //always capatolize 1st letter of your structs name. ex: struct Name
-        struct Character
-        {
-            public string Name;
-            public float Health;
-            public float Damage;
-            public float Defense;
-            public float Stamina;
-            public Weapon Weapon;
-        }
+      
+        
 
         //making a struct for an item/weapon. should at least contain a name variable, but can contain ant other stats you want.
         //add a variable that has the weapon struct type to the Monster struct.
         // want to put more stats here later.
-        struct Weapon
-        {
-            public string WeaponName;
-            public float WeaponDamage;
-            public float WeaponDefense;
-            public float WeaponDurability;
-            public bool IsBroken;
-        }
+       
 
         //some shits about to go down
         //declaring variables at the top.
@@ -58,46 +52,34 @@ namespace HelloDungeon
         Weapon Axe;
         string playerChoice = " ";
 
-        //NEED TO IMPLIMENT  Character[] Enemies ARRAY AND int currentEnemyIndex IN Fight FUNCTION.
-        float Attack(Character attacker, Character defender)
-        {
-            float totalDamage = attacker.Damage + attacker.Weapon.WeaponDamage - defender.Defense + defender.Weapon.WeaponDefense;
-
-            return defender.Health - totalDamage;
-        }
-        //use stamina value to heal some health.
-        float Recover(Character creature)
-        {
-            float totalhealth = creature.Health + creature.Stamina;
-            return totalhealth;
-        }
-
+       
+        
 
         void Fight(ref Character monster2)
         {
-            PrintStats(Player);
-            PrintStats(monster2);
+            Player.PrintStats();
+            monster2.PrintStats();
 
             string battleChoice = GetInput("Choose an action:", "Attack", "Dodge", "Recover", "Parry");
             {
                 if (battleChoice == "1")
                 {
-                    monster2.Health = Attack(Player, monster2);
+                    monster2.TakeDamage(Player.GetDamage);
 
-                    if (monster2.Health <= 0)
+                    if (monster2.GetHealth() <= 0)
                     {
                         return;
                     }
                 }
-
+                //not sure how to fix yet
                 else if (battleChoice == "2")
                 {
-                    Player.Defense *= 2;
+                    BoostDefense();
                 }
-
+                //need to fix in Character
                 else if (battleChoice == "3")
                 {
-                    Recover(Player);
+                    Recover();
                 }
 
                 else if (battleChoice == "4")
@@ -115,22 +97,14 @@ namespace HelloDungeon
                 PrintStats(monster2);
 
             }
-
+            //its all messed up
         }
         void ChangeNumber(int number)
         {
             number = 2;
         }
         //function for combat
-        void PrintStats(Character monster)
-        {
-            Console.WriteLine("Name: " + monster.Name);
-            Console.WriteLine("Health: " + monster.Health);
-            Console.WriteLine("Damage: " + monster.Damage);
-            Console.WriteLine("Defense: " + monster.Defense);
-            Console.WriteLine("Stamina: " + monster.Stamina);
-            Console.WriteLine("Weapon: " + monster.Weapon.WeaponName);
-        }
+       
         string GetInput(string prompt, string option1, string option2, string option3, string option4)
         {
             Console.WriteLine(prompt);
@@ -265,38 +239,25 @@ namespace HelloDungeon
 
 
             //first instance of utilizing struct Monster 
+            //we are utilizing the Character Class Constructor function since it initializes all the stats for any character
+            //... instead of doing it how we did previously based on a struct like the commented out stats below.
+            GibMoFist = new Character("GibMoFist", 75f, 25f, 10f, 10f, Stick);
 
-            GibMoFist.Name = "GibMoFist";
-            GibMoFist.Health = 75f;
-            GibMoFist.Damage = 25f;
-            GibMoFist.Defense = 10f;
-            GibMoFist.Stamina = 10f;
-            GibMoFist.Weapon = Stick;
-
-
-
-            Bibbles.Name = "Bibbles";
-            Bibbles.Health = 25f;
-            Bibbles.Damage = 15f;
-            Bibbles.Defense = 10f;
-            Bibbles.Stamina = 5f;
-            Bibbles.Weapon = Axe;
+            //this is how we initialized the stats before based on the Character struct instead of the Character Class Constructor.
+            //GibMoFist.Name = "GibMoFist";
+            //GibMoFist.Health = 75f;
+            //GibMoFist.Damage = 25f;
+            //GibMoFist.Defense = 10f;
+            //GibMoFist.Stamina = 10f;
+            //GibMoFist.CurrentWeapon = Stick;
 
 
-            Gonbu.Name = "Gonbu";
-            Gonbu.Health = 30f;
-            Gonbu.Damage = 5f;
-            Gonbu.Defense = 20f;
-            Gonbu.Stamina = 6f;
-            Gonbu.Weapon = Knives;
+            Bibbles = new Character("Bibbles the Relentless", 25f, 15f, 10f, 5f, Axe);
 
+            Gonbu = new Character("Gonbu Glassbones", 30f, 5f, 20f, 6f, Knives);
 
-            Mo.Name = "Sleepy Mo";
-            Mo.Health = 50f;
-            Mo.Damage = 20f;
-            Mo.Defense = 5f;
-            Mo.Stamina = 1f;
-            Mo.Weapon = Shield;
+            Mo = new Character("Sleepy Mo", 50f, 20f, 5f, 1f, Shield);
+         
 
 
             //Gib = 0, Bibs = 1 , Gonbu = 2, Mo = 3 Index slots in the array. you can use a int variable to acce3st them.
