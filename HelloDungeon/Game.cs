@@ -50,11 +50,15 @@ namespace HelloDungeon
         Character Gonbu;
         Character Bibbles;
         Character Mo;
+        Character[] Enemies;
+        int currentEnemyIndex = 0;
         Weapon Stick;
         Weapon Shield;
         Weapon Knives;
         Weapon Axe;
         string playerChoice = " ";
+
+        //NEED TO IMPLIMENT  Character[] Enemies ARRAY AND int currentEnemyIndex IN Fight FUNCTION.
         float Attack(Character attacker, Character defender)
         {
             float totalDamage = attacker.Damage + attacker.Weapon.WeaponDamage - defender.Defense + defender.Weapon.WeaponDefense;
@@ -67,7 +71,7 @@ namespace HelloDungeon
             float totalhealth = creature.Health + creature.Stamina;
             return totalhealth;
         }
-        
+
 
         void Fight(ref Character monster2)
         {
@@ -131,11 +135,11 @@ namespace HelloDungeon
         {
             Console.WriteLine(prompt);
             Console.WriteLine("1. " + option1);
-            Console.WriteLine("1. " + option2);
-            Console.WriteLine("1. " + option3);
-            Console.WriteLine("1. " + option4);
+            Console.WriteLine("2. " + option2);
+            Console.WriteLine("3. " + option3);
+            Console.WriteLine("4. " + option4);
             Console.Write(">");
-            
+
             playerChoice = Console.ReadLine();
             return playerChoice;
         }
@@ -144,7 +148,7 @@ namespace HelloDungeon
         {
             string playerChoice = GetInput("CHOOSE YOUR FIGHTER:", "1. GibMoFist", "2. Bibbles", "3. Sleepy Mo", "4. Gonbu");
             {
-              
+
                 if (playerChoice == "1")
                 {
                     Player = GibMoFist;
@@ -173,7 +177,7 @@ namespace HelloDungeon
                     Console.Clear();
                     return;
                 }
-                
+
             }
         }
         void EnemySelect()
@@ -222,37 +226,37 @@ namespace HelloDungeon
         //... after the name of the array is the slot you want to access = new element data;
         //new means its making room for the data that needs to be stored
         //arrays don't just store info. it stores a place or specific address in memory. like how ref works for individual variables.
-        char[] letters = new char[26] {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' };
+        char[] letters = new char[26] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-       
-        
+
+
         //Start is where we put all logic that needs to be initialized when the game as been called to begin/run.
         void Start()
         {
             //weapons list need to figure out how to impliment in combat
 
-   
+
             Stick.WeaponName = "Quarterstaff";
             Stick.WeaponDamage = 15f;
             Stick.WeaponDefense = 15f;
             Stick.WeaponDurability = 50f;
             Stick.IsBroken = false;
 
-            
+
             Shield.WeaponName = "Round Shield";
             Shield.WeaponDamage = 5f;
             Shield.WeaponDefense = 35f;
             Shield.WeaponDurability = 75f;
             Shield.IsBroken = false;
 
-            
+
             Knives.WeaponName = "Fighting Knives";
             Knives.WeaponDamage = 35f;
             Knives.WeaponDefense = 5f;
             Knives.WeaponDurability = 40f;
             Knives.IsBroken = false;
 
-            
+
             Axe.WeaponName = "Hatchet";
             Axe.WeaponDamage = 20f;
             Axe.WeaponDefense = 10f;
@@ -261,7 +265,7 @@ namespace HelloDungeon
 
 
             //first instance of utilizing struct Monster 
-           
+
             GibMoFist.Name = "GibMoFist";
             GibMoFist.Health = 75f;
             GibMoFist.Damage = 25f;
@@ -270,7 +274,7 @@ namespace HelloDungeon
             GibMoFist.Weapon = Stick;
 
 
-            
+
             Bibbles.Name = "Bibbles";
             Bibbles.Health = 25f;
             Bibbles.Damage = 15f;
@@ -278,7 +282,7 @@ namespace HelloDungeon
             Bibbles.Stamina = 5f;
             Bibbles.Weapon = Axe;
 
-            
+
             Gonbu.Name = "Gonbu";
             Gonbu.Health = 30f;
             Gonbu.Damage = 5f;
@@ -286,13 +290,18 @@ namespace HelloDungeon
             Gonbu.Stamina = 6f;
             Gonbu.Weapon = Knives;
 
-            
+
             Mo.Name = "Sleepy Mo";
             Mo.Health = 50f;
             Mo.Damage = 20f;
             Mo.Defense = 5f;
             Mo.Stamina = 1f;
             Mo.Weapon = Shield;
+
+
+            //Gib = 0, Bibs = 1 , Gonbu = 2, Mo = 3 Index slots in the array. you can use a int variable to acce3st them.
+
+            Enemies = new Character[4] { GibMoFist, Bibbles, Gonbu, Mo };
 
         }
         //Update is where the game while it is playing will make changes and stuff
@@ -305,62 +314,80 @@ namespace HelloDungeon
             }
             if (currentScene == 1)
             {
-                EnemySelect();
+                BattleScene();
             }
             else if (currentScene == 2)
             {
-                BattleScene();
+                WinResultsScene();
             }
             else if (currentScene == 3)
             {
-                WinResultsScene();
-                
+                EndGameScene();
             }
             else if (currentScene == 4)
             {
-                End();
+
             }
             else if (currentScene == 5)
             {
-                End();
+
             }
         }
-        //Make guys Fight here need to make better later.
+        //Make guys Fight here need to make better later. 
+        //NEED TO REWRITE THIS WHOLE DEAL BECAUSE ITS HORRIBLY BROKEN.
         void BattleScene()
         {
-            
-            Fight (ref Enemy);
+
+            Fight(ref Enemies[currentEnemyIndex]);
 
             Console.Clear();
 
-            Fight (ref Enemy);
-        
-            if (Gonbu.Health <= 0 || GibMoFist.Health <= 0)
+            if (Player.Health <= 0 || GibMoFist.Health <= 0)
             {
                 currentScene = 1;
             }
-            else if (Gonbu.Health <= 0 && GibMoFist.Health <= 0)
+            else if (Gonbu.Health <= 0 && Player.Health <= 0)
             {
                 Console.WriteLine("both have fallen");
                 Console.ReadKey(true);
-                currentScene = 2;
+                currentScene = 3;
             }
         }
         void WinResultsScene()
         {
-            if (Player.Health > 0 && Enemy.Health <= 0)
+            if (Player.Health > 0 && Enemies[currentEnemyIndex].Health <= 0)
             {
                 Console.WriteLine("The Winner Is:" + Player.Name);
+                currentScene = 1;
+                currentEnemyIndex++;
+
+                if (currentEnemyIndex >= Enemies.Length)
+                {
+                    gameOver = true;
+                }
             }
-            else if (Enemy.Health > 0 && Player.Health <= 0)
+            else if (Enemies[currentEnemyIndex].Health > 0 && Player.Health <= 0)
             {
-                Console.WriteLine("The Winner Is:" + Enemy.Name);
+                Console.WriteLine("The Winner Is:" + Enemies[currentEnemyIndex].Name);
+                currentScene = 3;
             }
             Console.ReadKey(true);
             Console.Clear();
         }
+        void EndGameScene()
+        {
+            playerChoice = GetInput("You Died Play Again?", "1. Yes", "2. No", " ", " ");
 
+            if (playerChoice == "1")
+            {
+                currentScene = 0;
+            }
+            else if (playerChoice == "2")
+            {
+                gameOver = true;
+            }
 
+        }
         void End()
         {
             Console.WriteLine("Thanks For Playing!");
@@ -369,46 +396,75 @@ namespace HelloDungeon
         ///... their Character, display the player's current stats.
         ///In the battle scene give the player the ability to fight one of the characters. They should have the ability to make choices.
         //Copy values from one struct to another. will need to do this.
-        
-        
-        public void Run()
-        {   
-            //more notes on Arrays at line 212
-            //function below allows you to change info in array slots.
-            int[] grades = new int[5] {23,43,56,7,10};
-          
-            void SetArrayValue(int[] arr, int index, int value)
-            {
-                arr[index] = value;
-            }
 
-            //for loop to print all values inside an array.
-            // initializer; condition; expression.
-            for (int i = 0; i < grades.Length; i++)
-            {
-                //grades at the index of variable i from the for loop.
-                Console.WriteLine(grades[i]);
-            }
-            return;
+        //more notes on Arrays at line 212
+        //function below allows you to change info in array slots.
+        //int[] grades = new int[5] { 23, 43, 56, 7, 10 };
+
+        //void SetArrayValue(int[] arr, int index, int value)
+        //{
+        //    arr[index] = value;
+        //}
+
+        //for loop to print all values inside an array.
+        // initializer; condition; expression.
+        //for (int i = 0; i < grades.Length; i++)
+        //{
+        //    //grades at the index of variable i from the for loop.
+        //    Console.WriteLine(grades[i]);
+        //}
+        //return;
 
 
-            ///LODIS INsTRUCTION: create a function that takes in an integer array.
-            ///the function should print out the sum of all of the values in the array.
-            ///ex: Input: int[] numbers = new int [3] {1,2,3};
-            ///ex: Output: 6
+        ///LODIS INsTRUCTION: create a function that takes in an integer array.
+        ///the function should print out the sum of all of the values in the array.
+        ///ex: Input: int[] numbers = new int [3] {1,2,3};
+        ///ex: Output: 6
 
-            //my attempt at the thing Lodis wants from us...
-            //trying to figure out how to make a variable/function that = the sum of all integers in an array
-            void Total(int[] prompt)
-            { 
-            
-                int numbos
+        //my attempt at the thing Lodis wants from us...
+        //trying to figure out how to make a variable/function that = the sum of all integers in an array
+        //Create a variable to store the sum.
+        //Loop through all of the values in the array. Increment sum by each value in the array. Print sum to the console.
+        void Total(int[] prompt)
+        {
+            int sum = 0;
             for (int i = 0; i < prompt.Length; i++)
             {
-                Console.WriteLine(i +prompt[i]);
+                sum += prompt[i];
             }
+            Console.WriteLine(sum);
+        }
+        ///New Array challenge: create a function that can take an integer array
+        /// function should just print out the largest number in an integer array
+        ///ex: Input: int[] numbers = new int [3] {1,2,3};
+        ///ex: Output: 3
+        void PrintLargest(int[] prompt)
+        {
+            int currentNumber = 0;
+            int biggestNumber = 0;
+            for (int i = 0; i < prompt.Length; i++)
+            {
+                currentNumber = prompt[i];
+                if (currentNumber >= biggestNumber)
+                {
+                    biggestNumber = currentNumber;
+                }
+                //this was pointless code that would do the same thing if there is no code here.
+                //else if (biggestNumber >= currentNumber)
+                //{
+                //    continue;
+                //} 
+            }
+            Console.WriteLine(biggestNumber);
+        }
 
+        public void Run()
+        {
+            int[] numbos = new int[5] { 3, 6, 437, 9, 12 };
+            PrintLargest(numbos);
+            Total(numbos);
             Start();
+            //E. A. SPORTS... ITS IN THE GAME
             //Start - called before the 1st loop
             // is mainly used to initialize variables at the beginning of the game.
 
@@ -424,12 +480,14 @@ namespace HelloDungeon
 
             while (gameOver == false)
             {
-             Update();
+                Update();
             }
-           
+
             End();
+
         }
-        
     }
 }
+
+
 
