@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -25,22 +26,24 @@ namespace HelloDungeon
     {
         //struct = making your own variable type and storing a bunch of data, pretty much whatever variables and values you want it to.
         //always capatolize 1st letter of your structs name. ex: struct Name
-      
-        
+
+
 
         //making a struct for an item/weapon. should at least contain a name variable, but can contain ant other stats you want.
         //add a variable that has the weapon struct type to the Monster struct.
         // want to put more stats here later.
-       
+
 
         //some shits about to go down
         //declaring variables at the top.
         bool gameOver;
         int currentScene = 0;
         // declaring that the monster variables exist.
-        Character Player;
-        Character Enemy;
+        //Player PlayerCharacter is what I have to use to access any functions in the Player Class.
+
+        Player PlayerCharacter;
         Character GibMoFist;
+        Character BadGuyzis;
         Character Gonbu;
         Character Bibbles;
         Character Mo;
@@ -50,97 +53,93 @@ namespace HelloDungeon
         Weapon Shield;
         Weapon Knives;
         Weapon Axe;
-        string playerChoice = " ";
+        string _playerChoice = " ";
 
-       
-        
 
+
+        //NEED TO FIX MATH ISSUES, ALSO NEED TO FIGURE OUT  IF I CAN USE BATTLECHOICE LOCAL VARIABLE.
         void Fight(ref Character monster2)
         {
-            Player.PrintStats();
+            PlayerCharacter.PrintStats();
             monster2.PrintStats();
 
-            string battleChoice = GetInput("Choose an action:", "Attack", "Dodge", "Recover", "Parry");
+            string battleChoice = PlayerCharacter.GetInput("Choose an action:", "Attack", "Dodge", "Recover", "Parry");
             {
                 if (battleChoice == "1")
                 {
-                    monster2.TakeDamage(Player.GetDamage);
+                    monster2.TakeDamage();
+
+                    if (monster2.GetHealth() <= 0)
+                    {
+                        return;
+                    }
+
+                }
+                //not sure how to fix yet
+                else if (battleChoice == "2")
+                {
+                    PlayerCharacter.BoostDefense();
+                }
+                //need to fix in Character
+                else if (battleChoice == "3")
+                {
+                    PlayerCharacter.Recover();
+                }
+
+                else if (battleChoice == "4")
+                {
+                    monster2.TakePunch();
 
                     if (monster2.GetHealth() <= 0)
                     {
                         return;
                     }
                 }
-                //not sure how to fix yet
-                else if (battleChoice == "2")
+                else
                 {
-                    BoostDefense();
+                    Console.Clear();
+                    Console.WriteLine("Invalid Input Press Any Key To Continue...");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                    return;
                 }
-                //need to fix in Character
-                else if (battleChoice == "3")
-                {
-                    Recover();
-                }
-
-                else if (battleChoice == "4")
-                {
-                    Player.Defense /= 2;
-                    monster2.Health = Attack(Player, monster2);
-
-                    if (monster2.Health <= 0)
-                    {
-                        return;
-                    }
-
-                }
-                PrintStats(Player);
-                PrintStats(monster2);
+                PlayerCharacter.PrintStats();
+                monster2.PrintStats();
 
             }
-            //its all messed up
+            //its all messed up... many days later it all works now.
         }
         void ChangeNumber(int number)
         {
             number = 2;
         }
-        //function for combat
-       
-        string GetInput(string prompt, string option1, string option2, string option3, string option4)
-        {
-            Console.WriteLine(prompt);
-            Console.WriteLine("1. " + option1);
-            Console.WriteLine("2. " + option2);
-            Console.WriteLine("3. " + option3);
-            Console.WriteLine("4. " + option4);
-            Console.Write(">");
+        //function for taking in input from player
 
-            playerChoice = Console.ReadLine();
-            return playerChoice;
-        }
         //Character selection choice list
+        //C# has 2 major types Value types and Referrence types
         void CharacterSelect()
         {
-            string playerChoice = GetInput("CHOOSE YOUR FIGHTER:", "1. GibMoFist", "2. Bibbles", "3. Sleepy Mo", "4. Gonbu");
+            _playerChoice = PlayerCharacter.GetInput("CHOOSE YOUR FIGHTER:", " GibMoFist", " Bibbles", " Sleepy Mo", " Gonbu");
             {
 
-                if (playerChoice == "1")
+                if (_playerChoice == "1")
                 {
-                    Player = GibMoFist;
+                    PlayerCharacter = new Player(GibMoFist.GetName(), GibMoFist.GetHealth(), GibMoFist.GetDamage(), GibMoFist.GetDefense(), GibMoFist.GetStamina(), GibMoFist.GetWeapon());
                     currentScene++;
                 }
-                else if (playerChoice == "2")
+                else if (_playerChoice == "2")
                 {
-                    Player = Bibbles;
+                    PlayerCharacter = new Player(Bibbles.GetName(), Bibbles.GetHealth(), Bibbles.GetDamage(), Bibbles.GetDefense(), Bibbles.GetStamina(), Bibbles.GetWeapon());
                     currentScene++;
                 }
-                else if (playerChoice == "3")
+                else if (_playerChoice == "3")
                 {
-                    Player = Mo;
+                    PlayerCharacter = new Player(Mo.GetName(), Mo.GetHealth(), Mo.GetDamage(), Mo.GetDefense(), Mo.GetStamina(), Mo.GetWeapon());
                     currentScene++;
                 }
-                else if (playerChoice == "4")
+                else if (_playerChoice == "4")
                 {
-                    Player = Gonbu;
+                    PlayerCharacter = new Player(Gonbu.GetName(), Gonbu.GetHealth(), Gonbu.GetDamage(), Gonbu.GetDefense(), Gonbu.GetStamina(), Gonbu.GetWeapon());
                     currentScene++;
                 }
                 else
@@ -151,43 +150,6 @@ namespace HelloDungeon
                     Console.Clear();
                     return;
                 }
-
-            }
-        }
-        void EnemySelect()
-        {
-            string playerChoice = GetInput("CHOOSE YOUR CHALLENGER:", "1. GibMoFist", "2. Bibbles", "3. Sleepy Mo", "4. Gonbu");
-            {
-
-                if (playerChoice == "1")
-                {
-                    Enemy = GibMoFist;
-                    currentScene++;
-                }
-                else if (playerChoice == "2")
-                {
-                    Enemy = Bibbles;
-                    currentScene++;
-                }
-                else if (playerChoice == "3")
-                {
-                    Enemy = Mo;
-                    currentScene++;
-                }
-                else if (playerChoice == "4")
-                {
-                    Enemy = Gonbu;
-                    currentScene++;
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("Invalid Input Press Any Key To Continue...");
-                    Console.ReadKey(true);
-                    Console.Clear();
-                    return;
-                }
-
             }
         }
 
@@ -237,7 +199,7 @@ namespace HelloDungeon
             Axe.WeaponDurability = 65f;
             Axe.IsBroken = false;
 
-
+            ///Lodis Instruction: make a new instance of a Character initialize them and put them in the enemies array
             //first instance of utilizing struct Monster 
             //we are utilizing the Character Class Constructor function since it initializes all the stats for any character
             //... instead of doing it how we did previously based on a struct like the commented out stats below.
@@ -257,12 +219,12 @@ namespace HelloDungeon
             Gonbu = new Character("Gonbu Glassbones", 30f, 5f, 20f, 6f, Knives);
 
             Mo = new Character("Sleepy Mo", 50f, 20f, 5f, 1f, Shield);
-         
 
+            BadGuyzis = new Character("Bad Guyzis", 50f, 30f, 5f, 20f, Stick);
 
-            //Gib = 0, Bibs = 1 , Gonbu = 2, Mo = 3 Index slots in the array. you can use a int variable to acce3st them.
+            //Gib = 0, Bibs = 1 , Gonbu = 2, Mo = 3 BadGuyzis = 4 Index slots in the array. you can use a int variable to access them.
 
-            Enemies = new Character[4] { GibMoFist, Bibbles, Gonbu, Mo };
+            Enemies = new Character[5] { GibMoFist, Bibbles, Gonbu, Mo, BadGuyzis };
 
         }
         //Update is where the game while it is playing will make changes and stuff
@@ -295,7 +257,9 @@ namespace HelloDungeon
             }
         }
         //Make guys Fight here need to make better later. 
-        //NEED TO REWRITE THIS WHOLE DEAL BECAUSE ITS HORRIBLY BROKEN.
+        //I have no idea why this doesn't work. Figured it out. My Update function's currentScenes were totally outta wack and...
+        //looped infinitely. Just missed the issue from previous code overhauls. Now need to impliment the enemies ability to fight back
+        //also need to fix the ability to fight all combatants. probably make 'if' statements in WinResultScene
         void BattleScene()
         {
 
@@ -303,33 +267,38 @@ namespace HelloDungeon
 
             Console.Clear();
 
-            if (Player.Health <= 0 || GibMoFist.Health <= 0)
+            if (PlayerCharacter.GetHealth() <= 0 || Enemies[currentEnemyIndex].GetHealth() <= 0)
             {
-                currentScene = 1;
+                currentScene = 2;
+                return;
             }
-            else if (Gonbu.Health <= 0 && Player.Health <= 0)
+            else if (PlayerCharacter.GetHealth() <= 0 && Enemies[currentEnemyIndex].GetHealth() <= 0)
             {
                 Console.WriteLine("both have fallen");
                 Console.ReadKey(true);
                 currentScene = 3;
+                return;
             }
         }
         void WinResultsScene()
         {
-            if (Player.Health > 0 && Enemies[currentEnemyIndex].Health <= 0)
+            if (PlayerCharacter.GetHealth() > 0 && Enemies[currentEnemyIndex].GetHealth() <= 0)
             {
-                Console.WriteLine("The Winner Is:" + Player.Name);
-                currentScene = 1;
-                currentEnemyIndex++;
+                if (currentEnemyIndex < Enemies.Length)
+                {
+                    Console.WriteLine("The Winner Is:" + PlayerCharacter.GetName());
+                    currentEnemyIndex++;
+                    currentScene = 1;
+                }
 
-                if (currentEnemyIndex >= Enemies.Length)
+                else if (currentEnemyIndex >= Enemies.Length)
                 {
                     gameOver = true;
                 }
             }
-            else if (Enemies[currentEnemyIndex].Health > 0 && Player.Health <= 0)
+            else if (Enemies[currentEnemyIndex].GetHealth() > 0 && PlayerCharacter.GetHealth() <= 0)
             {
-                Console.WriteLine("The Winner Is:" + Enemies[currentEnemyIndex].Name);
+                Console.WriteLine("The Winner Is:" + Enemies[currentEnemyIndex].GetName());
                 currentScene = 3;
             }
             Console.ReadKey(true);
@@ -337,93 +306,100 @@ namespace HelloDungeon
         }
         void EndGameScene()
         {
-            playerChoice = GetInput("You Died Play Again?", "1. Yes", "2. No", " ", " ");
+            _playerChoice = PlayerCharacter.GetInput("Would You Like To Play Again?", "1. Yes", "2. No");
 
-            if (playerChoice == "1")
+            if (_playerChoice == "1")
             {
                 currentScene = 0;
             }
-            else if (playerChoice == "2")
+            else if (_playerChoice == "2")
             {
                 gameOver = true;
+
+
+
             }
-
-        }
-        void End()
-        {
-            Console.WriteLine("Thanks For Playing!");
-        }
-        ///Make a new scene for Character Selection. Display all the characters we created as options. When the player selects a...
-        ///... their Character, display the player's current stats.
-        ///In the battle scene give the player the ability to fight one of the characters. They should have the ability to make choices.
-        //Copy values from one struct to another. will need to do this.
-
-        //more notes on Arrays at line 212
-        //function below allows you to change info in array slots.
-        //int[] grades = new int[5] { 23, 43, 56, 7, 10 };
-
-        //void SetArrayValue(int[] arr, int index, int value)
-        //{
-        //    arr[index] = value;
-        //}
-
-        //for loop to print all values inside an array.
-        // initializer; condition; expression.
-        //for (int i = 0; i < grades.Length; i++)
-        //{
-        //    //grades at the index of variable i from the for loop.
-        //    Console.WriteLine(grades[i]);
-        //}
-        //return;
-
-
-        ///LODIS INsTRUCTION: create a function that takes in an integer array.
-        ///the function should print out the sum of all of the values in the array.
-        ///ex: Input: int[] numbers = new int [3] {1,2,3};
-        ///ex: Output: 6
-
-        //my attempt at the thing Lodis wants from us...
-        //trying to figure out how to make a variable/function that = the sum of all integers in an array
-        //Create a variable to store the sum.
-        //Loop through all of the values in the array. Increment sum by each value in the array. Print sum to the console.
-        void Total(int[] prompt)
-        {
-            int sum = 0;
-            for (int i = 0; i < prompt.Length; i++)
+            else
             {
-                sum += prompt[i];
+                Console.Clear();
+                Console.WriteLine("Invalid Input Press Any Key To Continue...");
+                Console.ReadKey(true);
+                Console.Clear();
+                return;
             }
-            Console.WriteLine(sum);
         }
-        ///New Array challenge: create a function that can take an integer array
-        /// function should just print out the largest number in an integer array
-        ///ex: Input: int[] numbers = new int [3] {1,2,3};
-        ///ex: Output: 3
-        void PrintLargest(int[] prompt)
-        {
-            int currentNumber = 0;
-            int biggestNumber = 0;
-            for (int i = 0; i < prompt.Length; i++)
+            void End()
             {
-                currentNumber = prompt[i];
-                if (currentNumber >= biggestNumber)
+                Console.WriteLine("Thanks For Playing!");
+            }
+            ///Make a new scene for Character Selection. Display all the characters we created as options. When the player selects a...
+            ///... their Character, display the player's current stats.
+            ///In the battle scene give the player the ability to fight one of the characters. They should have the ability to make choices.
+            //Copy values from one struct to another. will need to do this.
+
+            //more notes on Arrays at line 212
+            //function below allows you to change info in array slots.
+            //int[] grades = new int[5] { 23, 43, 56, 7, 10 };
+
+            //void SetArrayValue(int[] arr, int index, int value)
+            //{
+            //    arr[index] = value;
+            //}
+
+            //for loop to print all values inside an array.
+            // initializer; condition; expression.
+            //for (int i = 0; i < grades.Length; i++)
+            //{
+            //    //grades at the index of variable i from the for loop.
+            //    Console.WriteLine(grades[i]);
+            //}
+            //return;
+
+
+            ///LODIS INsTRUCTION: create a function that takes in an integer array.
+            ///the function should print out the sum of all of the values in the array.
+            ///ex: Input: int[] numbers = new int [3] {1,2,3};
+            ///ex: Output: 6
+
+            //my attempt at the thing Lodis wants from us...
+            //trying to figure out how to make a variable/function that = the sum of all integers in an array
+            //Create a variable to store the sum.
+            //Loop through all of the values in the array. Increment sum by each value in the array. Print sum to the console.
+            void Total(int[] prompt)
+            {
+                int sum = 0;
+                for (int i = 0; i < prompt.Length; i++)
                 {
-                    biggestNumber = currentNumber;
+                    sum += prompt[i];
                 }
-                //this was pointless code that would do the same thing if there is no code here.
-                //else if (biggestNumber >= currentNumber)
-                //{
-                //    continue;
-                //} 
+                Console.WriteLine(sum);
             }
-            Console.WriteLine(biggestNumber);
-        }
-
+            ///New Array challenge: create a function that can take an integer array
+            /// function should just print out the largest number in an integer array
+            ///ex: Input: int[] numbers = new int [3] {1,2,3};
+            ///ex: Output: 3
+            void PrintLargest(int[] prompt)
+            {
+                int currentNumber = 0;
+                int biggestNumber = 0;
+                for (int i = 0; i < prompt.Length; i++)
+                {
+                    currentNumber = prompt[i];
+                    if (currentNumber >= biggestNumber)
+                    {
+                        biggestNumber = currentNumber;
+                    }
+                    //this was pointless code that would do the same thing if there is no code here.
+                    //else if (biggestNumber >= currentNumber)
+                    //{
+                    //    continue;
+                    //} 
+                }
+                Console.WriteLine(biggestNumber);
+            }
+        
         public void Run()
         {
-            int[] numbos = new int[5] { 3, 6, 437, 9, 12 };
-            PrintLargest(numbos);
-            Total(numbos);
             Start();
             //E. A. SPORTS... ITS IN THE GAME
             //Start - called before the 1st loop
@@ -440,15 +416,19 @@ namespace HelloDungeon
             ///these are the Golden Functions as according to the book of Lodis.
 
             while (gameOver == false)
+            
             {
-                Update();
+                    Update();
             }
 
-            End();
+                End();
 
+
+            
         }
     }
 }
+
 
 
 
